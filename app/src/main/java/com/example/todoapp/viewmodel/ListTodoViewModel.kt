@@ -31,7 +31,7 @@ class ListTodoViewModel(application: Application): AndroidViewModel(application)
 //            )
             val db = buildDb(getApplication())
 
-            todoLD.postValue(db.todoDao().selectAllTodo())
+            todoLD.postValue(db.todoDao().selectAllTodo(0))
             loadingLD.postValue(false)
         }
     }
@@ -42,9 +42,9 @@ class ListTodoViewModel(application: Application): AndroidViewModel(application)
 //                getApplication()
 //            )
             val db = buildDb(getApplication())
-            db.todoDao().deleteTodo(todo)
+            db.todoDao().updateDeleteTodo(1, todo.uuid)
 
-            todoLD.postValue(db.todoDao().selectAllTodo())
+            todoLD.postValue(db.todoDao().selectAllTodo(0))
         }
     }
 }
