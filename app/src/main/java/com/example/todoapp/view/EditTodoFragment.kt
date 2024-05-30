@@ -12,24 +12,41 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.example.todoapp.R
 import com.example.todoapp.databinding.FragmentCreateTodoBinding
+import com.example.todoapp.databinding.FragmentEditTodoBinding
+import com.example.todoapp.model.Todo
 import com.example.todoapp.viewmodel.DetailTodoViewModel
 
-class EditTodoFragment : Fragment() {
-    private lateinit var binding: FragmentCreateTodoBinding
+class EditTodoFragment : Fragment(), RadioClick, TodoSaveChangesClick {
+//    private lateinit var binding: FragmentCreateTodoBinding
+    private lateinit var binding: FragmentEditTodoBinding
     private lateinit var viewModel: DetailTodoViewModel
+
+    override fun onRadioClick(v: View, priority: Int, obj: Todo) {
+        obj.priority = priority
+    }
+
+    override fun onTodoSaveChangesClick(v: View, obj: Todo) {
+        viewModel.update(obj.title, obj.notes, obj.priority, obj.uuid)
+        Toast.makeText(v.context, "Todo Updated", Toast.LENGTH_SHORT).show()
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        binding = FragmentCreateTodoBinding.inflate(inflater,container,false)
+        binding = FragmentEditTodoBinding.inflate(inflater,container,false)
         return binding.root
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.radioListener = this
+        binding.saveListener = this
+
         viewModel = ViewModelProvider(this).get(DetailTodoViewModel::class.java)
 
         val uuid = EditTodoFragmentArgs.fromBundle(requireArguments()).uuid
@@ -52,13 +69,14 @@ class EditTodoFragment : Fragment() {
 
     fun observeViewModel() {
         viewModel.todoLD.observe(viewLifecycleOwner, Observer {
-            binding.txtTitle.setText(it.title)
-            binding.txtNotes.setText(it.notes)
-            when (it.priority) {
-                1 -> binding.radioLow.isChecked = true
-                2 -> binding.radioMedium.isChecked = true
-                else -> binding.radioHigh.isChecked = true
-            }
+            binding.todo = it
+//            binding.txtTitle.setText(it.title)
+//            binding.txtNotes.setText(it.notes)
+//            when (it.priority) {
+//                1 -> binding.radioLow.isChecked = true
+//                2 -> binding.radioMedium.isChecked = true
+//                else -> binding.radioHigh.isChecked = true
+//            }
 
         })
     }
